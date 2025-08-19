@@ -1,34 +1,108 @@
-import React from "react";
+import React, { useState } from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
-import { AppBar, Toolbar, Button, Typography } from "@mui/material";
+import { AppBar, Toolbar, Button, Container } from "@mui/material";
 
-function Home() {
-  return <Typography variant="h5" sx={{ p: 2 }}>Welcome to URL Shortener</Typography>;
-}
+
+import { TextField, Typography, Box, Grid, Paper } from "@mui/material";
 
 function Shortener() {
-  return <Typography variant="h5" sx={{ p: 2 }}>URL Shortener Page</Typography>;
+  const [urls, setUrls] = useState([{ longUrl: "", validity: "", shortcode: "" }]);
+
+  const handleChange = (index, field, value) => {
+    const newUrls = [...urls];
+    newUrls[index][field] = value;
+    setUrls(newUrls);
+  };
+
+  const addRow = () => {
+    if (urls.length < 5) {
+      setUrls([...urls, { longUrl: "", validity: "", shortcode: "" }]);
+    }
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    alert("Form submitted! (logic will be added in Step 2B)");
+  };
+
+  return (
+    <Box sx={{ p: 3 }}>
+      <Typography variant="h4" gutterBottom>
+        URL Shortener
+      </Typography>
+      <form onSubmit={handleSubmit}>
+        <Grid container spacing={2}>
+          {urls.map((row, index) => (
+            <Grid item xs={12} key={index}>
+              <Paper sx={{ p: 2, mb: 2 }}>
+                <TextField
+                  label="Original URL"
+                  value={row.longUrl}
+                  onChange={(e) => handleChange(index, "longUrl", e.target.value)}
+                  fullWidth
+                  required
+                  margin="normal"
+                />
+                <TextField
+                  label="Validity (minutes)"
+                  value={row.validity}
+                  onChange={(e) => handleChange(index, "validity", e.target.value)}
+                  fullWidth
+                  type="number"
+                  margin="normal"
+                />
+                <TextField
+                  label="Custom Shortcode"
+                  value={row.shortcode}
+                  onChange={(e) => handleChange(index, "shortcode", e.target.value)}
+                  fullWidth
+                  margin="normal"
+                />
+              </Paper>
+            </Grid>
+          ))}
+        </Grid>
+
+        {urls.length < 5 && (
+          <Button onClick={addRow} variant="outlined" sx={{ mr: 2 }}>
+            + Add another URL
+          </Button>
+        )}
+        <Button type="submit" variant="contained">
+          Shorten URLs
+        </Button>
+      </form>
+    </Box>
+  );
 }
 
 function Stats() {
-  return <Typography variant="h5" sx={{ p: 2 }}>Statistics Page</Typography>;
+  return <h2>Statistics Page (Step 3)</h2>;
 }
 
-export default function App() {
+function App() {
   return (
     <Router>
       <AppBar position="static">
         <Toolbar>
-          <Button color="inherit" component={Link} to="/">Home</Button>
-          <Button color="inherit" component={Link} to="/shorten">Shorten</Button>
-          <Button color="inherit" component={Link} to="/stats">Stats</Button>
+          <Button color="inherit" component={Link} to="/shorten">
+            Shortener
+          </Button>
+          <Button color="inherit" component={Link} to="/stats">
+            Statistics
+          </Button>
         </Toolbar>
       </AppBar>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/shorten" element={<Shortener />} />
-        <Route path="/stats" element={<Stats />} />
-      </Routes>
+      <Container>
+        <Routes>
+          <Route path="/shorten" element={<Shortener />} />
+          <Route path="/stats" element={<Stats />} />
+          <Route path="/" element={<Shortener />} />
+        </Routes>
+      </Container>
     </Router>
   );
 }
+
+export default App;
+
